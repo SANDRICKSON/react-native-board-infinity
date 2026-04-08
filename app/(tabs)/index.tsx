@@ -1,30 +1,22 @@
 import React from 'react';
-import {FlexAlignType, StyleSheet, Text, View} from 'react-native';
+import {Button, FlexAlignType, StyleSheet, Text, View} from 'react-native';
+import {Space_Separator} from "json5/lib/unicode";
 
 
-interface GreetingProps {
-    name: string;
-    age: number;
-}
+export default function Counter() {
+    const [count, setCount] = React.useState<number>(0);
 
 
-const Greeting: React.FC<GreetingProps> = ({name, age}) => {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Hello {name}</Text>
-            <Text style={styles.text}>You are {age} years old</Text>
-        </View>
-    )
-}
-
-export default function HomeScreen() {
-    const items = ['Apple', 'Banana', 'Cherry'];
+    const increment = () => setCount(count + 1);
+    const decrement = () => setCount(count - 1);
 
 
     return (
         <View style={styles.container}>
-
-            <Greeting name={"Sandro"} age={12}/>
+            <Text>Counter App</Text>
+            <Text style={styles.text}>{count}</Text>
+            <Button title="Increase" onPress={increment}></Button>
+            <Button title="Decrease" onPress={decrement}></Button>
         </View>
     );
 }
