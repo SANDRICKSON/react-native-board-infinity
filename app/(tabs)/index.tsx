@@ -1,71 +1,79 @@
-import React from 'react';
-import {Button, FlatList, FlexAlignType, StyleSheet, Text, useWindowDimensions, View} from 'react-native';
-import {Image} from "expo-image";
-import {GestureHandlerRootView} from "react-native-gesture-handler";
+import React, {useState} from 'react';
+import {
+    Alert,
+    Button,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 
-
-interface Product {
-    id: number;
+interface FormData {
     name: string;
-    image: string;
+    age: number;
 }
 
-const products: Product[] = [
-    {
-        id: 1,
-        name: "Apple iPhone 15",
-        image: "https://images.pexels.com/photos/5081929/pexels-photo-5081929.jpeg",
-    },
-    {
-        id: 2,
-        name: "Nike Air Max Sneakers",
-        image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg",
-    },
-    {
-        id: 3,
-        name: "Sony WH-1000XM5 Headphones",
-        image: "https://images.pexels.com/photos/3394653/pexels-photo-3394653.jpeg",
-    },
-    {
-        id: 4,
-        name: "MacBook Pro 16\"",
-        image: "https://images.pexels.com/photos/18105/pexels-photo.jpg",
-    },
-    {
-        id: 5,
-        name: "Canon EOS R5 Camera",
-        image: "https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg",
-    },
-];
+export default function App() {
+    const [formData, setFormData] = useState<FormData>({ name: '', age: 0 });
+    const [submittedData, setSubmittedData] = useState<FormData | null>(null);
+    const [buttonPressedCount, setButtonPressedCount] = useState(0);
 
+    const handleInputChange = (field: keyof FormData, value: string) => {
+        if (field === 'age') {
+            setFormData((prev) => ({ ...prev, age: Number(value) }));
+        } else {
+            setFormData((prev) => ({ ...prev, [field]: value }));
+        }
+    };
 
+    const handleSubmit = () => {
+        if (!formData.name || !formData.age) {
+            Alert.alert("Please fill in both fields!");
+            return;
+        }
+        setSubmittedData(formData);
+        Alert.alert('Success', 'Form Submitted Successfully!');
+    };
 
+    const handleCustomButtonPress = () => {
+        setButtonPressedCount((prev) => prev + 1);
+        Alert.alert('Button Pressed', `Button Pressed ${buttonPressedCount + 1} times!`);
+    };
 
-export default function Index() {
-    const window = useWindowDimensions();
-    const numColumns = window.width > 600 ? 3 : 2;
-
-    const renderItem = ({ item }: { item: Product }) => {
-        return (
-            <View style={{ flex: 1, margin: 5 }}>
-                <Text>{item.name}</Text>
-                <Image
-                    source={{ uri: item.image }}
-                    style={{ width: '100%', height: 100 }}
-                />
-            </View>
-        );
+    const handleTouchablePress = () => {
+        Alert.alert("Touchable Pressed", `Touchable Pressed`);
     };
 
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <FlatList
-                data={products}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={numColumns}
-                contentContainerStyle={{ padding: 10 }}
+        <View style={{ padding: 20, alignItems:'center',justifyContent:'center'}}>
+            <TextInput
+                placeholder="Enter your name"
+                value={formData.name}
+                onChangeText={(value) => handleInputChange('name', value)}
+                style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
             />
-        </GestureHandlerRootView>
+            <TextInput
+                placeholder="Enter your age"
+                value={formData.age.toString()}
+                onChangeText={(value) => handleInputChange('age', value)}
+                keyboardType="numeric"
+                style={{ borderWidth: 1, padding: 8, marginBottom: 10 }}
+            />
+            <Button title="Submit" onPress={handleSubmit} />
+            <Button  title="Press Me" onPress={handleCustomButtonPress}/>
+
+            <TouchableOpacity onPress={handleTouchablePress} style={{ marginTop: 10 }}>
+                <View style={{ backgroundColor: 'blue', padding: 10 }}>
+                    <Text style={{ color: 'white', textAlign: 'center' }}>Press Me</Text>
+                </View>
+            </TouchableOpacity>
+
+            {submittedData && (
+                <View style={{ marginTop: 20 }}>
+                    <Text>Name: {submittedData.name}</Text>
+                    <Text>Age: {submittedData.age}</Text>
+                </View>
+            )}
+        </View>
     );
 }
