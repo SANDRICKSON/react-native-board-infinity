@@ -1,41 +1,48 @@
 import React from 'react';
-import { FlexAlignType, StyleSheet, Text, View } from 'react-native';
+import {FlexAlignType, StyleSheet, Text, View} from 'react-native';
 
-interface Auth {
-  isLoggedIn: boolean;
 
+interface GreetingProps {
+    name: string;
+    age: number;
 }
 
-const Greeting: React.FC<Auth> = ({ isLoggedIn }) => {
-  return isLoggedIn ? <Text>Welcome back!</Text> : <Text>Please sign up.</Text>
+
+const Greeting: React.FC<GreetingProps> = ({name, age}) => {
+    return (
+        <View style={styles.container}>
+            <Text style={styles.text}>Hello {name}</Text>
+            <Text style={styles.text}>You are {age} years old</Text>
+        </View>
+    )
 }
-const Header: React.FC = () => {
-  return <Text style={styles.header}>Header</Text>
-}
+
 export default function HomeScreen() {
-  const items = ['Apple', 'Banana', 'Cherry'];
+    const items = ['Apple', 'Banana', 'Cherry'];
 
 
-  return (
-    <View style={styles.container}>
-      <Header />
-      <Text>Hello World</Text>
-      {items.map((item, index) => (<Text key={index}>{item}</Text>))}
-      <Greeting isLoggedIn={true} />
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+
+            <Greeting name={"Sandro"} age={12}/>
+        </View>
+    );
 }
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center' as FlexAlignType,
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        alignItems: 'center' as FlexAlignType,
+        justifyContent: 'center',
+    },
 
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  }
+    header: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    text: {
+        fontSize: 25,
+        fontWeight: 'bold',
+    }
 })
