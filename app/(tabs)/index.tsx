@@ -1,15 +1,34 @@
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import HomeScreen from "@/app/screens/HomeScreen";
-import SettingsScreen from "@/app/screens/SettingsScreen";
+import {Text, View, StyleSheet} from "react-native";
+import React, {useEffect} from "react";
 
-const Tab = createBottomTabNavigator();
 
-const Index: React.FC = () => {
+const AutoIncrementCounter: React.FC = () => {
+
+    const [counter, setCounter] = React.useState(0);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCounter((prevCounter) => prevCounter + 1);
+        }, 1)
+        return () => clearInterval(interval)
+    }, []);
     return (
-        <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
-            <Tab.Screen name="Settings" component={SettingsScreen}></Tab.Screen>
-        </Tab.Navigator>
+        <View style={styles.container}>
+            <Text style={styles.text}>Counter: {counter}</Text>
+        </View>
     )
 }
-export default Index;
+
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ecf0f1',
+    },
+    text: {
+        fontSize: 20,
+        color: '#333',
+    }
+})
+export default AutoIncrementCounter;
