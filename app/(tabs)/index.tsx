@@ -1,60 +1,73 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-type Post = {
+interface Item {
     id: number;
     title: string;
-    body: string;
 }
 
-const FetchExample: React.FC = () => {
-    const [data, setData] = useState<Post[] | null>(null); // ✅ აქ არის შეცდომის გამოსწორება
-    const [loading, setLoading] = useState(true);
+const ITEMS_PER_PAGE = 10;
 
-    const fetchPosts = async () => {
+export default function PaginatedList(): React.JSX.Element {
+    const [items, setItems] = useState<Item[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [hasMore, setHasMore] = useState<boolean>(true);
+
+    const fetchData = async () => {
+        if (loading || !hasMore) return; // ✅ სწორია
+
+        setLoading(true); // ✅ დავიწყეთ loading
+
         try {
-            const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-            if (!response.ok) {
-                throw new Error("Could not find posts.");
+            const response = await axios.get(
+                `https://jsonplaceholder.typicode.com/posts?_limit=${ITEMS_PER_PAGE}&_page=${page}`
+            );
+
+            const newItems = response.data as Item[];
+
+            setItems(prev => [...prev, ...newItems]);
+            setPage(prev => prev + 1);
+
+            if (newItems.length < ITEMS_PER_PAGE) {
+                setHasMore(false);
             }
-            const jsonData: Post[] = await response.json(); // ✅ JSON არის მასივი
-            setData(jsonData);
         } catch (error) {
-            console.error(error);
+            console.log(error);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPosts();
+        fetchData();
     }, []);
 
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
-    }
-
     return (
-        <View style={styles.container}>
-            <FlatList
-                data={data} // ✅ ახლა data ნამდვილად არის Post[]
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.item}>
-                        <Text style={styles.title}>{item.title}</Text>
-                        <Text>{item.body}</Text>
-                    </View>
-                )}
-            />
-        </View>
+        <FlatList
+            data={items}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+                <View style={styles.item}>
+                    <Text style={styles.title}>{item.title}</Text>
+                </View>
+            )}
+            onEndReached={fetchData}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+                loading ? <ActivityIndicator size="large" /> : null
+            }
+        />
     );
-};
+}
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: "center", alignItems: "center" },
-    item: { marginBottom: 20 },
-    title: { fontSize: 18, fontWeight: "bold" },
-    loader: { flex: 1, justifyContent: "center", alignItems: "center" },
+    item: {
+        padding: 15,
+        borderBottomWidth: 1,
+    },
+    title: {
+        fontSize: 16,
+    },
 });
-
-export default FetchExample;
