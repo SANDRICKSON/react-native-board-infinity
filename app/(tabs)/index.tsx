@@ -16,9 +16,9 @@ export default function PaginatedList(): React.JSX.Element {
     const [hasMore, setHasMore] = useState<boolean>(true);
 
     const fetchData = async () => {
-        if (loading || !hasMore) return; // ✅ სწორია
+        if (loading || !hasMore) return;
 
-        setLoading(true); // ✅ დავიწყეთ loading
+        setLoading(true);
 
         try {
             const response = await axios.get(
